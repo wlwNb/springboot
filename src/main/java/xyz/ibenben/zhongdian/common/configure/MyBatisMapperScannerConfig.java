@@ -5,8 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import tk.mybatis.spring.mapper.MapperScannerConfigurer;
-
 import java.util.Properties;
 
 /**
@@ -19,7 +17,7 @@ import java.util.Properties;
 @Configuration
 public class MyBatisMapperScannerConfig {
 
-    @Bean
+   /* @Bean
     public MapperScannerConfigurer mapperScannerConfigurer() {
         MapperScannerConfigurer mapperScannerConfigurer = new MapperScannerConfigurer();
         mapperScannerConfigurer.setSqlSessionFactoryBeanName("sqlSessionFactory");
@@ -28,8 +26,8 @@ public class MyBatisMapperScannerConfig {
         properties.setProperty("mappers", "xyz.ibenben.zhongdian.common.BaseDao");
         properties.setProperty("notEmpty", "false");
         properties.setProperty("IDENTITY", "MYSQL");
-        mapperScannerConfigurer.setProperties(properties);
+       // mapperScannerConfigurer.set(properties);
         return mapperScannerConfigurer;
-    }
+    }*/
 
 }

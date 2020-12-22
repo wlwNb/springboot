@@ -1,22 +1,69 @@
 # Server settings  
-server:  
-    port: 80
-    address: 127.0.0.1
-    
-# SPRING PROFILES  
-spring:         
-    # HTTP ENCODING  
-    http:  
-        encoding.charset: UTF-8  
-        encoding.enable: true  
-        encoding.force: true  
-    mvc:
-        view.prefix: /WEB-INF/jsp/
-        view.suffix: .jsp
+server:
+  port: 8080
+  address: 127.0.0.1
 
-    # DATASOURCE  
-    datasource:  
-        driverClass: com.mysql.jdbc.Driver  
-        url: jdbc:mysql://127.0.0.1:3306/hire?useUnicode=true&characterEncoding=utf-8  
-        username: root  
-        password: 123
+# SPRING PROFILES  
+spring:
+  redis:
+    timeout: 30000
+    lettuce:
+      pool:
+        max-active: 256
+        max-idle: 64
+        max-wait: 30000
+        min-idle: 32
+    password: wlw
+    host: 115.159.144.187
+    port: 7001
+  http:
+    encoding.charset: UTF-8
+    encoding.enable: true
+    encoding.force: true
+  #rocket相关配置
+  rocketmq:
+    # 生产者配置
+    producer:
+      isOnOff: on
+      # 发送同一类消息的设置为同一个group，保证唯一
+      groupName: PID_xyy_saas_product_test
+      # 服务地址
+      namesrvAddr: 115.159.144.187:9876
+      # 消息最大长度 默认1024*4(4M)
+      maxMessageSize: 4096
+      # 发送消息超时时间,默认3000
+      sendMsgTimeout: 3000
+      # 发送消息失败重试次数，默认2
+      retryTimesWhenSendFailed: 2
+    # 消费者配置
+    consumer:
+      isOnOff: on
+      # 官方建议：确保同一组中的每个消费者订阅相同的主题。
+      groupName: PID_xyy_saas_product_test
+      # 服务地址
+      namesrvAddr: 115.159.144.187:9876
+      # 接收该 Topic 下所有 Tag
+      topics: xyy_saas_product_test
+      consumeThreadMin: 20
+      consumeThreadMax: 64
+      # 设置一次消费消息的条数，默认为1条
+      consumeMessageBatchMaxSize: 1
+mybatis-plus:
+  # MyBaits 别名包扫描路径，通过该属性可以给包中的类注册别名
+  type-aliases-package: com.fxbin.mybatisplus.bean.*
+  # 该配置请和 typeAliasesPackage 一起使用，如果配置了该属性，则仅仅会扫描路径下以该类作为父类的域对象 。
+  type-aliases-super-type: java.lang.Object
+  configuration:
+    # 这个配置会将执行的sql打印出来，在开发或测试的时候可以用
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    # 驼峰下划线转换
+    map-underscore-to-camel-case: true
+    # 配置的缓存的全局开关
+    cache-enabled: true
+    # 延时加载的开关
+    lazy-loading-enabled: true
+    # 开启的话，延时加载一个属性时会加载该对象全部属性，否则按需加载属性
+    multiple-result-sets-enabled: true
+    use-generated-keys: true
+    default-statement-timeout: 60
+    default-fetch-size: 100

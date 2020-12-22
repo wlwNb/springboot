@@ -1,16 +1,11 @@
 package xyz.ibenben.zhongdian.system.entity;
 
+import lombok.Data;
+
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-
-
+@Data
 public class Task implements Serializable {
-	@Id
-    @Column(name = "id")
-	@GeneratedValue(generator="UUID")
     private String id;
 	private String name;
 	private String descript;
