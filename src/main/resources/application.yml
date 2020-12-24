@@ -5,6 +5,32 @@ server:
 
 # SPRING PROFILES  
 spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://192.168.7.28:3306/test?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+    druid:
+      #2.连接池配置
+      #初始化连接池的连接数量 大小，最小，最大
+      initial-size: 5
+      min-idle: 5
+      max-active: 20
+      #配置获取连接等待超时的时间
+      max-wait: 60000
+      #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      time-between-eviction-runs-millis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      min-evictable-idle-time-millis: 30000
+      validation-query: SELECT 1 FROM DUAL
+      test-while-idle: true
+      test-on-borrow: true
+      test-on-return: false
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+    serialization:
+      write-dates-as-timestamps: false
   redis:
     timeout: 30000
     lettuce:
@@ -21,36 +47,9 @@ spring:
     encoding.enable: true
     encoding.force: true
   #rocket相关配置
-  rocketmq:
-    # 生产者配置
-    producer:
-      isOnOff: on
-      # 发送同一类消息的设置为同一个group，保证唯一
-      groupName: PID_xyy_saas_product_test
-      # 服务地址
-      namesrvAddr: 115.159.144.187:9876
-      # 消息最大长度 默认1024*4(4M)
-      maxMessageSize: 4096
-      # 发送消息超时时间,默认3000
-      sendMsgTimeout: 3000
-      # 发送消息失败重试次数，默认2
-      retryTimesWhenSendFailed: 2
-    # 消费者配置
-    consumer:
-      isOnOff: on
-      # 官方建议：确保同一组中的每个消费者订阅相同的主题。
-      groupName: PID_xyy_saas_product_test
-      # 服务地址
-      namesrvAddr: 115.159.144.187:9876
-      # 接收该 Topic 下所有 Tag
-      topics: xyy_saas_product_test
-      consumeThreadMin: 20
-      consumeThreadMax: 64
-      # 设置一次消费消息的条数，默认为1条
-      consumeMessageBatchMaxSize: 1
 mybatis-plus:
   # MyBaits 别名包扫描路径，通过该属性可以给包中的类注册别名
-  type-aliases-package: com.fxbin.mybatisplus.bean.*
+  type-aliases-package: wlw.zc.demo.system.entity.*
   # 该配置请和 typeAliasesPackage 一起使用，如果配置了该属性，则仅仅会扫描路径下以该类作为父类的域对象 。
   type-aliases-super-type: java.lang.Object
   configuration:
@@ -67,3 +66,27 @@ mybatis-plus:
     use-generated-keys: true
     default-statement-timeout: 60
     default-fetch-size: 100
+  mapper-locations: classpath:mapper/*.xml
+rocketmq:
+  # 服务地址
+  name-server: 115.159.144.187:9876
+# 生产者配置
+  producer:
+    # 发送同一类消息的设置为同一个group，保证唯一
+    group: PID_xyy_saas_product_test
+    # 消息最大长度 默认1024*4(4M)rocketmq.producer.group
+    maxMessageSize: 4096
+    # 发送消息失败重试次数，默认2
+    retryTimesWhenSendFailed: 2
+    # 发送消息超时时间,默认3000
+    send-message-timeout: 3000
+  # 消费者配置
+  consumer:
+  # 官方建议：确保同一组中的每个消费者订阅相同的主题。
+    group: PID_xyy_saas_product_test
+    # 接收该 Topic 下所有 Tag
+    topics: xyy_saas_product_test
+    consumeThreadMin: 20
+    consumeThreadMax: 64
+    # 设置一次消费消息的条数，默认为1条
+    consumeMessageBatchMaxSize: 1

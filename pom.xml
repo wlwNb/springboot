@@ -1,5 +1,7 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.ibenben</groupId>
 	<artifactId>zhongdian</artifactId>
@@ -19,6 +21,14 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<java.version>1.8</java.version>
+		<commons.version>2.4.2</commons.version>
+		<lombok.version>1.18.10</lombok.version>
+		<rocketmq.version>2.0.4</rocketmq.version>
+		<fastJson.version>1.2.75</fastJson.version>
+		<jedis.version>2.9.0</jedis.version>
+		<mybatisplus.version>3.1.0</mybatisplus.version>
+        <mybatis-plus-generator.version>3.2.0</mybatis-plus-generator.version>
+		<mysql.jdbc.version>8.0.21</mysql.jdbc.version>
 	</properties>
 	<!-- Add typical dependencies for a web application -->
 	<dependencies>
@@ -28,12 +38,12 @@ spring boot 2.0 的操作手册有标注 大家可以去看看 地址是：https
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-pool2</artifactId>
-			<version>2.4.2</version>
+			<version>${commons.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.10</version>
+			<version>${lombok.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -47,7 +57,7 @@ spring boot 2.0 的操作手册有标注 大家可以去看看 地址是：https
 		<dependency>
 			<groupId>org.apache.rocketmq</groupId>
 			<artifactId>rocketmq-spring-boot-starter</artifactId>
-			<version>2.0.4</version>
+			<version>${rocketmq.version}</version>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter -->
 		<dependency>
@@ -61,19 +71,43 @@ spring boot 2.0 的操作手册有标注 大家可以去看看 地址是：https
 			<optional>true</optional>
 			<scope>true</scope>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
+			<version>${fastJson.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
-			<version>2.9.0</version>
+			<version>${jedis.version}</version>
+		</dependency>
+		<!-- mybatisplus  -->
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus</artifactId>
+			<version>3.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-boot-starter</artifactId>
+			<version>${mybatisplus.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.baomidou</groupId>
+			<artifactId>mybatis-plus-generator</artifactId>
+			<version>${mybatis-plus-generator.version}</version>
+		</dependency>
+		<!-- mysql连接驱动-->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>${mysql.jdbc.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>io.netty</groupId>
 			<artifactId>netty-all</artifactId>
-			<version>5.0.0.Alpha1</version>
 		</dependency>
 	</dependencies>
 
@@ -106,14 +140,4 @@ spring boot 2.0 的操作手册有标注 大家可以去看看 地址是：https
 			<url>http://repo.spring.io/milestone</url>
 		</repository>
 	</repositories>
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<url>http://repo.spring.io/snapshot</url>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<url>http://repo.spring.io/milestone</url>
-		</pluginRepository>
-	</pluginRepositories>
 </project>
