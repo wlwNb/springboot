@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+import wlw.zc.demo.netty.NettyServer;
+import wlw.zc.demo.socket.NIOLowServer;
 import wlw.zc.demo.system.dao.SaasMedicalProductMapper;
 import wlw.zc.demo.system.entity.SaasMedicalProduct;
 
@@ -31,6 +33,10 @@ public class UserController {
 	private DefaultMQProducer producer;
 	@Resource
 	private SaasMedicalProductMapper mapper;
+	@Resource
+	private NettyServer discardServer;
+	@Resource
+	private NIOLowServer nioLowServer;
 	@RequestMapping("/regiester")
 	public String regiester(Map<String, Object> model){
 		redisTemplate.opsForValue().set("id","1111111111");
@@ -54,7 +60,4 @@ public class UserController {
 		List<SaasMedicalProduct> saasMedicalProducts = mapper.listDataByIds(Arrays.asList(111732909L, 111732937L));
 		return JSON.toJSONString(saasMedicalProducts);
 	}
-
-
-
 }

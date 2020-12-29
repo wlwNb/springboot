@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 医保药品匹配表(saas_medical_product) -->
+<mapper namespace="wlw.zc.demo.system.dao.SaasMedicalProductMapper">
+    <!-- 结果映射 -->
+    <resultMap id="saasMedicalProductMap" type="wlw.zc.demo.system.entity.SaasMedicalProduct">
+        <id column="ID" property="id" jdbcType="BIGINT" />
+        <result column="ORGAN_SIGN" property="organSign" jdbcType="VARCHAR" />
+        <result column="product_pref" property="productPref" jdbcType="VARCHAR" />
+        <result column="PRODUCT_ID" property="productId" jdbcType="BIGINT" />
+        <result column="STANDARD_LIBRARY_ID" property="standardLibraryId" jdbcType="BIGINT" />
+        <result column="MEDICAL_COMMON_NAME" property="medicalCommonName" jdbcType="VARCHAR" />
+        <result column="MEDICAL_PRODUCT_CODE" property="medicalProductCode" jdbcType="VARCHAR" />
+        <result column="MEDICAL_STATUS" property="medicalStatus" jdbcType="TINYINT" />
+        <result column="MEDICAL_TYPE" property="medicalType" jdbcType="INTEGER" />
+        <result column="extend" property="extend" jdbcType="VARCHAR" />
+        <result column="PLATFORM_TYPE" property="platformType" jdbcType="VARCHAR" />
+        <result column="data_source" property="dataSource" jdbcType="INTEGER" />
+        <result column="approve_status" property="approveStatus" jdbcType="INTEGER" />
+        <result column="CREATE_USER" property="createUser" jdbcType="VARCHAR" />
+        <result column="CREATE_TIME" property="createTime" jdbcType="TIMESTAMP" />
+        <result column="UPDATE_USER" property="updateUser" jdbcType="VARCHAR" />
+        <result column="UPDATE_TIME" property="updateTime" jdbcType="TIMESTAMP" />
+        <result column="YN" property="yn" jdbcType="TINYINT" />
+        <result column="VERSION" property="version" jdbcType="INTEGER" />
+        <result column="mnemonic_code" property="mnemonicCode" jdbcType="VARCHAR" />
+        <result column="pharmacy_pref" property="pharmacyPref" jdbcType="VARCHAR" />
+        <result column="common_name" property="commonName" jdbcType="VARCHAR" />
+        <result column="product_name" property="productName" jdbcType="VARCHAR" />
+        <result column="unit" property="unit" jdbcType="VARCHAR" />
+        <result column="attribute_specification" property="attributeSpecification" jdbcType="VARCHAR" />
+        <result column="dosage_form" property="dosageForm" jdbcType="VARCHAR" />
+        <result column="approval_number" property="approvalNumber" jdbcType="VARCHAR" />
+        <result column="manufacturer" property="manufacturer" jdbcType="VARCHAR" />
+        <result column="channel_id" property="channelId" jdbcType="BIGINT" />
+        <result column="small_unit" property="smallUnit" jdbcType="VARCHAR" />
+        <result column="unit_conversion" property="unitConversion" jdbcType="DECIMAL" />
+    </resultMap>
+    
+    <!-- 表所有字段 -->
+    <sql id="allColumns">
+        ID, ORGAN_SIGN, product_pref, PRODUCT_ID, STANDARD_LIBRARY_ID, medical_common_name,MEDICAL_PRODUCT_CODE, MEDICAL_STATUS, MEDICAL_TYPE,extend, PLATFORM_TYPE,
+        data_source, approve_status, CREATE_USER, CREATE_TIME,UPDATE_USER, UPDATE_TIME, YN, VERSION,mnemonic_code,pharmacy_pref,common_name,product_name,
+        unit,attribute_specification,dosage_form,approval_number,manufacturer,channel_id,small_unit,unit_conversion
+    </sql>
+    <sql id="columns">
+        ORGAN_SIGN, product_pref, PRODUCT_ID, STANDARD_LIBRARY_ID, medical_common_name,MEDICAL_PRODUCT_CODE, MEDICAL_STATUS, MEDICAL_TYPE,extend,
+        PLATFORM_TYPE, data_source, approve_status, CREATE_USER, CREATE_TIME,UPDATE_USER, UPDATE_TIME, YN, VERSION,mnemonic_code,pharmacy_pref,common_name,product_name,
+        unit,attribute_specification,dosage_form,approval_number,manufacturer,channel_id,small_unit,unit_conversion
+    </sql>
+
+    <!-- 查询所有数据 -->
+    <select id="syncTotalPageData" resultMap="saasMedicalProductMap" parameterType="String">
+        SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product where ORGAN_SIGN = #{organSign} order by id asc
+    </select>
+    
+    <!-- 根据条件查询数据 -->
+    <select id="selectMedicalProductByCondition" resultMap="saasMedicalProductMap" parameterType="map">
+        SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product WHERE ORGAN_SIGN = #{organSign}
+        <if test="medicalStatus != null">
+            and medical_status = #{medicalStatus}
+        </if>
+        <if test="channelId != null">
+            and channel_id = #{channelId}
+        </if>
+    </select>
+
+    <!-- 根据条件查询数据 -->
+    <select id="selectMedicalProductCountByCondition" resultType="java.lang.Integer" parameterType="map">
+        SELECT
+        count(*)
+        FROM saas_medical_product WHERE organ_sign = #{organSign}
+        <if test="medicalStatus != null">
+            and medical_status = #{medicalStatus}
+        </if>
+        <if test="platformType != null">
+            and platform_type = #{platformType}
+        </if>
+    </select>
+
+
+    <select id="selectMedicalProduct" resultMap="saasMedicalProductMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product
+        WHERE ORGAN_SIGN = #{organSign} AND product_id = #{productId}
+        <if test="channelId != null">
+            and channel_id = #{channelId}
+        </if>
+    </select>
+
+    <!-- 根据主键查询数据 -->
+    <select id="syncIncrementData" resultMap="saasMedicalProductMap" parameterType="list">
+        SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product WHERE ORGAN_SIGN = #{organSign} and ID IN
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="listDataByIds" resultMap="saasMedicalProductMap" parameterType="list">
+        /*FORCE_MASTER*/ SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product WHERE product_id IN
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+    
+
+    <!-- 批量插入数据 -->
+    <insert id="insertProductMatching" parameterType="list" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO saas_medical_product (<include refid="columns" />)
+        VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (
+                #{item.organSign},
+                #{item.productPref},
+                #{item.productId},
+                #{item.standardLibraryId},
+                #{item.medicalCommonName},
+                #{item.medicalProductCode},
+                #{item.medicalStatus},
+                #{item.medicalType},
+                #{item.extend},
+                #{item.platformType},
+                #{item.dataSource},
+                #{item.approveStatus},
+                #{item.createUser},
+                #{item.createTime},
+                #{item.updateUser},
+                #{item.updateTime},
+                #{item.yn},
+                #{item.version},
+                #{item.mnemonicCode},
+                #{item.pharmacyPref},
+                #{item.commonName},
+                #{item.productName},
+                #{item.unit},
+                #{item.attributeSpecification},
+                #{item.dosageForm},
+                #{item.approvalNumber},
+                #{item.manufacturer},
+                #{item.channelId},
+                #{item.smallUnit},
+                #{item.unitConversion}
+
+            )
+        </foreach>
+    </insert>
+
+    <insert id="insertMedicalProduct" useGeneratedKeys="true" keyProperty="id" parameterType="wlw.zc.demo.system.entity.SaasMedicalProduct">
+        insert into saas_medical_product
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="organSign != null">
+                organ_sign,
+            </if>
+            <if test="productPref != null">
+                product_pref,
+            </if>
+            <if test="productId != null">
+                product_id,
+            </if>
+            <if test="standardLibraryId != null">
+                standard_library_id,
+            </if>
+            <if test="medicalCommonName != null">
+                medical_common_name,
+            </if>
+            <if test="medicalProductCode != null">
+                medical_product_code,
+            </if>
+            <if test="medicalStatus != null">
+                medical_status,
+            </if>
+            <if test="medicalType != null">
+                medical_type,
+            </if>
+            <if test="extend != null">
+                extend,
+            </if>
+            <if test="platformType != null">
+                platform_type,
+            </if>
+            <if test="dataSource != null">
+                data_source,
+            </if>
+            <if test="approveStatus != null">
+                approve_status,
+            </if>
+            <if test="createUser != null">
+                create_user,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateUser != null">
+                update_user,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="yn != null">
+                yn,
+            </if>
+            <if test="version != null">
+                version,
+            </if>
+            <if test="mnemonicCode != null">
+                mnemonic_code,
+            </if>
+            <if test="pharmacyPref != null">
+                pharmacy_pref,
+            </if>
+            <if test="commonName != null">
+                common_name,
+            </if>
+            <if test="productName != null">
+                product_name,
+            </if>
+            <if test="unit != null">
+                unit,
+            </if>
+            <if test="attributeSpecification != null">
+                attribute_specification,
+            </if>
+            <if test="dosageForm != null">
+                dosage_form,
+            </if>
+            <if test="approvalNumber != null">
+                approval_number,
+            </if>
+            <if test="manufacturer != null">
+                manufacturer,
+            </if>
+            <if test="channelId != null">
+                channel_id,
+            </if>
+            <if test="smallUnit != null">
+                small_unit,
+            </if>
+            <if test="unitConversion != null">
+                unit_conversion,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="organSign != null">
+                #{organSign,jdbcType=VARCHAR},
+            </if>
+            <if test="productPref != null">
+                #{productPref,jdbcType=VARCHAR},
+            </if>
+            <if test="productId != null">
+                #{productId,jdbcType=BIGINT},
+            </if>
+            <if test="standardLibraryId != null">
+                #{standardLibraryId,jdbcType=BIGINT},
+            </if>
+            <if test="medicalCommonName != null">
+                #{medicalCommonName,jdbcType=VARCHAR},
+            </if>
+            <if test="medicalProductCode != null">
+                #{medicalProductCode,jdbcType=VARCHAR},
+            </if>
+            <if test="medicalStatus != null">
+                #{medicalStatus,jdbcType=TINYINT},
+            </if>
+            <if test="medicalType != null">
+                #{medicalType,jdbcType=INTEGER},
+            </if>
+            <if test="extend != null">
+                #{extend,jdbcType=VARCHAR},
+            </if>
+            <if test="platformType != null">
+                #{platformType,jdbcType=VARCHAR},
+            </if>
+            <if test="dataSource != null">
+                #{dataSource,jdbcType=INTEGER},
+            </if>
+            <if test="approveStatus != null">
+                #{approveStatus,jdbcType=INTEGER},
+            </if>
+            <if test="createUser != null">
+                #{createUser,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateUser != null">
+                #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="yn != null">
+                #{yn,jdbcType=TINYINT},
+            </if>
+            <if test="version != null">
+                #{version,jdbcType=INTEGER},
+            </if>
+            <if test="mnemonicCode != null">
+                #{mnemonicCode,jdbcType=VARCHAR},
+            </if>
+            <if test="pharmacyPref != null">
+                #{pharmacyPref,jdbcType=VARCHAR},
+            </if>
+            <if test="commonName != null">
+                #{commonName,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null">
+                #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null">
+                #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="attributeSpecification != null">
+                #{attributeSpecification,jdbcType=VARCHAR},
+            </if>
+            <if test="dosageForm != null">
+                #{dosageForm,jdbcType=VARCHAR},
+            </if>
+            <if test="approvalNumber != null">
+                #{approvalNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="manufacturer != null">
+                #{manufacturer,jdbcType=VARCHAR},
+            </if>
+            <if test="channelId != null">
+                #{channelId,jdbcType=VARCHAR},
+            </if>
+            <if test="smallUnit != null">
+                #{smallUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="unitConversion != null">
+                #{unitConversion,jdbcType=DECIMAL},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateMedicalProduct" parameterType="wlw.zc.demo.system.entity.SaasMedicalProduct">
+        update saas_medical_product
+        <set>
+            <if test="standardLibraryId != null">
+                standard_library_id = #{standardLibraryId,jdbcType=BIGINT},
+            </if>
+            <if test="medicalCommonName != null">
+                medical_common_name = #{medicalCommonName,jdbcType=VARCHAR},
+            </if>
+            <if test="medicalProductCode != null">
+                medical_product_code = #{medicalProductCode,jdbcType=VARCHAR},
+            </if>
+            <if test="medicalStatus != null">
+                medical_status = #{medicalStatus,jdbcType=TINYINT},
+            </if>
+            <if test="medicalType != null">
+                medical_type = #{medicalType,jdbcType=INTEGER},
+            </if>
+            <if test="platformType != null and platformType != ''">
+                platform_type = #{platformType,jdbcType=VARCHAR},
+            </if>
+            <if test="dataSource != null">
+                data_source = #{dataSource,jdbcType=INTEGER},
+            </if>
+            <if test="approveStatus != null">
+                approve_status = #{approveStatus,jdbcType=INTEGER},
+            </if>
+            <if test="updateUser != null and updateUser != ''">
+                update_user = #{updateUser,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="yn != null">
+                yn = #{yn,jdbcType=TINYINT},
+            </if>
+            <if test="mnemonicCode != null and mnemonicCode != ''">
+                mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+            </if>
+            <if test="pharmacyPref != null and pharmacyPref != ''">
+                pharmacy_pref = #{pharmacyPref,jdbcType=VARCHAR},
+            </if>
+            <if test="commonName != null and commonName != ''">
+                common_name = #{commonName,jdbcType=VARCHAR},
+            </if>
+            <if test="productName != null and productName != ''">
+                product_name = #{productName,jdbcType=VARCHAR},
+            </if>
+            <if test="unit != null and unit != ''">
+                unit = #{unit,jdbcType=VARCHAR},
+            </if>
+            <if test="attributeSpecification != null and attributeSpecification != ''">
+                attribute_specification = #{attributeSpecification,jdbcType=VARCHAR},
+            </if>
+            <if test="dosageForm != null and dosageForm != ''">
+                dosage_form = #{dosageForm,jdbcType=VARCHAR},
+            </if>
+            <if test="approvalNumber != null and approvalNumber != ''">
+                approval_number = #{approvalNumber,jdbcType=VARCHAR},
+            </if>
+            <if test="manufacturer != null and manufacturer != ''">
+                manufacturer = #{manufacturer,jdbcType=VARCHAR},
+            </if>
+            <if test="smallUnit != null and smallUnit !=''">
+                small_unit =#{smallUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="unitConversion != null">
+                unit_conversion = #{unitConversion,jdbcType=DECIMAL},
+            </if>
+                version = version+1
+        </set>
+        where 1=1
+            <if test="productId != null">
+                and product_id = #{productId,jdbcType=BIGINT}
+            </if>
+            <if test="productPref != null">
+                and product_pref = #{productPref,jdbcType=VARCHAR}
+            </if>
+            <if test="channelId != null">
+                and channel_id = #{channelId,jdbcType=BIGINT}
+            </if>
+                and organ_sign = #{organSign,jdbcType=VARCHAR}
+
+
+    </update>
+    <!-- 批量修改数据 -->
+    <update id="updateProductMatching" parameterType="list">
+        <foreach collection="list" index="index" item="item" separator=";">
+            UPDATE saas_medical_product SET
+                <if test="item.standardLibraryId != null">
+                    standard_library_id = #{item.standardLibraryId,jdbcType=BIGINT},
+                </if>
+                <if test="item.medicalCommonName != null">
+                    medical_common_name = #{item.medicalCommonName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.medicalProductCode != null">
+                    medical_product_code = #{item.medicalProductCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.medicalStatus != null">
+                    medical_status = #{item.medicalStatus,jdbcType=TINYINT},
+                </if>
+                <if test="item.medicalType != null">
+                    medical_type = #{item.medicalType,jdbcType=INTEGER},
+                </if>
+                <if test="item.platformType != null and item.platformType != ''">
+                    platform_type = #{item.platformType,jdbcType=VARCHAR},
+                </if>
+                <if test="item.dataSource != null">
+                    data_source = #{item.dataSource,jdbcType=INTEGER},
+                </if>
+                <if test="item.approveStatus != null">
+                    approve_status = #{item.approveStatus,jdbcType=INTEGER},
+                </if>
+                <if test="item.updateUser != null and item.updateUser != ''">
+                    update_user = #{item.updateUser,jdbcType=VARCHAR},
+                </if>
+                <if test="item.updateTime != null">
+                    update_time = #{item.updateTime,jdbcType=TIMESTAMP},
+                </if>
+                <if test="item.yn != null">
+                    yn = #{item.yn,jdbcType=TINYINT},
+                </if>
+                <if test="item.mnemonicCode != null and item.mnemonicCode != ''">
+                    mnemonic_code = #{item.mnemonicCode,jdbcType=VARCHAR},
+                </if>
+                <if test="item.pharmacyPref != null and item.pharmacyPref != ''">
+                    pharmacy_pref = #{item.pharmacyPref,jdbcType=VARCHAR},
+                </if>
+                <if test="item.commonName != null and item.commonName != ''">
+                    common_name = #{item.commonName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.productName != null and item.productName != ''">
+                    product_name = #{item.productName,jdbcType=VARCHAR},
+                </if>
+                <if test="item.unit != null and item.unit != ''">
+                    unit = #{item.unit,jdbcType=VARCHAR},
+                </if>
+                <if test="item.attributeSpecification != null and item.attributeSpecification != ''">
+                    attribute_specification = #{item.attributeSpecification,jdbcType=VARCHAR},
+                </if>
+                <if test="item.dosageForm != null and item.dosageForm != ''">
+                    dosage_form = #{item.dosageForm,jdbcType=VARCHAR},
+                </if>
+                <if test="item.approvalNumber != null and item.approvalNumber != ''">
+                    approval_number = #{item.approvalNumber,jdbcType=VARCHAR},
+                </if>
+                <if test="item.manufacturer != null and item.manufacturer != ''">
+                    manufacturer = #{item.manufacturer,jdbcType=VARCHAR},
+                </if>
+                <if test="item.smallUnit != null and item.smallUnit != ''">
+                    small_unit = #{item.smallUnit,jdbcType=VARCHAR},
+                </if>
+                <if test="item.unitConversion != null">
+                    unit_conversion = #{item.unitConversion,jdbcType=DECIMAL},
+                </if>
+                    version = version+1
+            WHERE 1=1
+                <if test="item.productId != null">
+                    and product_id = #{item.productId,jdbcType=BIGINT}
+                </if>
+                <if test="item.productPref != null">
+                    and product_pref = #{item.productPref,jdbcType=VARCHAR}
+                </if>
+                <if test="item.channelId != null">
+                    and channel_id = #{item.channelId,jdbcType=BIGINT}
+                </if>
+                    and organ_sign = #{item.organSign,jdbcType=VARCHAR}
+
+        </foreach>
+    </update>
+
+    <!-- 根据主键批量删除数据 -->
+    <delete id="deleteProductMatching">
+        DELETE FROM saas_medical_product WHERE organ_sign = #{organSign} and ls_id IN
+        <foreach collection="ids" index="index" item="lsId" open="(" separator="," close=")">
+            #{lsId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteProductMatchingByProductIds">
+        DELETE FROM saas_medical_product WHERE organ_sign = #{organSign} and product_id IN
+        <foreach collection="ids" index="index" item="productId" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </delete>
+    <select id="countProductByOrgansign" parameterType="String" resultType="Integer">
+        select count(*) FROM saas_medical_product WHERE organ_sign = #{organSign}
+    </select>
+
+    <select id="selectTotalPageData" resultMap="saasMedicalProductMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product where ORGAN_SIGN = #{organSign}
+        order by id asc limit #{pageNum},#{pageSize}
+    </select>
+
+    <delete id="deleteByOrganSign" parameterType="String">
+        DELETE FROM saas_medical_product WHERE organ_sign = #{organSign}
+    </delete>
+
+    <delete id="deleteProductMatchingByMedicalCode">
+        DELETE FROM saas_medical_product WHERE organ_sign = #{organSign} and medical_product_code IN
+        <foreach collection="deleteCodeList" index="index" item="item" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+
+    <select id="selectMedicalProducts" resultMap="saasMedicalProductMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product WHERE ORGAN_SIGN = #{organSign} and channel_id = #{channelId} and product_id IN
+        <foreach collection="productIds" index="index" item="productId" open="(" separator="," close=")">
+            #{productId}
+        </foreach>
+    </select>
+
+    <select id="selectMedicalProductCount" resultType="Integer">
+        SELECT
+        ifnull(count(1),0) matchCount
+        FROM saas_medical_product WHERE ORGAN_SIGN = #{organSign} and channel_id = #{channelId} and data_source = 1
+    </select>
+
+    <update id="flushMedicalProductChannelId">
+        update saas_medical_product set channel_id = #{channelId} where organ_sign = #{organSign} and channel_id = -1
+    </update>
+    <select id="selectMedicalProductByParam" resultMap="saasMedicalProductMap">
+        SELECT
+        <include refid="allColumns" />
+        FROM saas_medical_product WHERE ORGAN_SIGN = #{organSign}
+        <if test="medicalStatus != null">
+            and medical_status = #{medicalStatus}
+        </if>
+        <if test="list != null and list.size() > 0">
+            and product_pref in
+            <foreach collection="list" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="channelId != null">
+            and channel_id = #{channelId}
+        </if>
+    </select>
+    <update id="updateMedicalProductDetail">
+        update saas_medical_product
+        <set>
+            <if test="saveMedicalProductUnitDto.smallUnit != null and saveMedicalProductUnitDto.smallUnit != ''">
+                small_unit = #{saveMedicalProductUnitDto.smallUnit,jdbcType=VARCHAR},
+            </if>
+            <if test="saveMedicalProductUnitDto.unitConversion != null">
+                unit_conversion = #{saveMedicalProductUnitDto.unitConversion,jdbcType=DECIMAL},
+            </if>
+            version = version+1
+        </set>
+        where product_pref = #{saveMedicalProductUnitDto.productPref,jdbcType=VARCHAR}
+          and organ_sign = #{saveMedicalProductUnitDto.organSign,jdbcType=VARCHAR}
+        <if test="saveMedicalProductUnitDto.channelId != null">
+            and channel_id = #{saveMedicalProductUnitDto.channelId}
+        </if>
+    </update>
+    <select id="selectMedicalProductByProductPref" resultMap="saasMedicalProductMap">
+        select
+        <include refid="columns"/>
+        from saas_medical_product
+        <where>
+            organ_sign=#{organSign}
+            <if test="productPrefs != null and productPrefs.size()>0">
+                and product_pref in
+                <foreach collection="productPrefs" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="channelId != null">
+                and channel_id=#{channelId}
+            </if>
+        </where>
+    </select>
+</mapper>
