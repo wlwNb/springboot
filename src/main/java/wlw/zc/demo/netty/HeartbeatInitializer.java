@@ -8,6 +8,8 @@ import io.netty.handler.timeout.IdleStateHandler;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 @Component
 public class HeartbeatInitializer extends ChannelInitializer<Channel> {
@@ -18,8 +20,8 @@ public class HeartbeatInitializer extends ChannelInitializer<Channel> {
         channel.pipeline()
                 //五秒没有收到消息 将IdleStateHandler 添加到 ChannelPipeline 中
                 .addLast(new IdleStateHandler(5, 0, 0))//(8)
-                .addLast(new StringEncoder())//(9)
-                .addLast(new StringDecoder())//(9)
+                .addLast(new StringDecoder(StandardCharsets.UTF_8))//(9)
+                .addLast(new StringEncoder(StandardCharsets.UTF_8))//(9)
                 .addLast(new NettyServerHandler());//(10)
     }
     }

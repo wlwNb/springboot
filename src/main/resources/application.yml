@@ -2,7 +2,6 @@
 server:
   port: 8080
   address: 127.0.0.1
-
 # SPRING PROFILES  
 spring:
   datasource:
@@ -33,6 +32,7 @@ spring:
       write-dates-as-timestamps: false
   redis:
     timeout: 30000
+    database: 7
     lettuce:
       pool:
         max-active: 256
@@ -90,3 +90,44 @@ rocketmq:
     consumeThreadMax: 64
     # 设置一次消费消息的条数，默认为1条
     consumeMessageBatchMaxSize: 1
+dubbo:
+  application:
+    #当前服务名称
+    name: springboot-customer
+    #telnet端口号
+    qos-port: 23200
+    #当前应用的版本
+    version: 1.0.0
+  protocol:
+    #协议BeanId
+    id: dubbo
+    #协议名称
+    name: dubbo
+    #服务端口
+    port: 20880
+    #请求及相应数据包大小限制字节8M
+    payload: 8388608
+    threadpool: fixed
+    threads: 500
+  registry:
+      #注册中心地址协议
+      protocol: zookeeper
+      #注册中心服务器地址，同一集群内的多个地址用逗号分隔
+      address: 115.159.144.187:2181,115.159.144.187:2182,115.159.144.187:2183
+      #注册中心不存在时，是否报错
+      check: false
+      #注册中心请求超时时间(毫秒)
+      timeout: 6000
+      default: true
+  consumer:
+      #启动时检查提供者是否存在，true报错，false忽略
+      check: false
+      #远程服务调用超时时间(毫秒)
+      timeout: 6000
+  provider:
+      #远程服务调用超时时间(毫秒)
+      timeout: 6000
+      #远程服务调用重试次数，不包括第一次调用，不需要重试请设为0
+      retries: -1
+      #请求及响应数据包大小限制，单位：字节
+      payload: 8388608

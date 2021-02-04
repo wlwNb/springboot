@@ -10,11 +10,12 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.FixedLengthFrameDecoder;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
+import wlw.zc.demo.netty.ClientHandler;
 
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 
-public class NettyClient {
+public class NettyClient1 {
     private static final EventLoopGroup group = new NioEventLoopGroup();
 
     public static void main(String[] args) throws Exception {

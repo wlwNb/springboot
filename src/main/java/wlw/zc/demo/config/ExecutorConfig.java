@@ -16,7 +16,7 @@ public class ExecutorConfig {
     @Bean
     public ExecutorService asyncServiceExecutor() {
         log.info("start asyncServiceExecutor");
-        ExecutorService executor = Executors.newFixedThreadPool(5);
+        ExecutorService executor = Executors.newScheduledThreadPool(5);
         //配置核心线程数
 //        Runtime.getRuntime().availableProcessors()*10 获取当前jvm处理器数量,
 //        一般来说，核心线程数设置为处理器数2倍最好。

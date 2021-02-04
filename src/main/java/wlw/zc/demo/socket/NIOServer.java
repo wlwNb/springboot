@@ -24,7 +24,6 @@ public class NIOServer {
     private ByteBuffer sendBuffer = ByteBuffer.allocate(1024);//调整缓存的大小可以看到打印输出的变化
 
     String str;
-    @PostConstruct
     public void start() throws IOException {
         executor.execute(new Runnable() {
             @SneakyThrows
@@ -35,7 +34,7 @@ public class NIOServer {
                 // 服务器配置为非阻塞
                 ssc.configureBlocking(false);
                 // 进行服务的绑定
-                ssc.bind(new InetSocketAddress("localhost", 9001));
+                ssc.bind(new InetSocketAddress("localhost", 9101));
                 log.info("nio high 准备运行端口 9001");
                 // 通过open()方法找到Selector
                 selector = Selector.open();
