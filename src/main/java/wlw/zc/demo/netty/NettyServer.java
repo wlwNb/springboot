@@ -8,7 +8,9 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Import;
 import org.springframework.stereotype.Component;
+import wlw.zc.demo.system.entity.Product;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -18,6 +20,7 @@ import java.util.concurrent.Executors;
 
 @Slf4j
 @Component
+@Import(Product.class)
 public class NettyServer {
     @Resource
     private ChildChannelHandler childChannelHandler;
@@ -39,7 +42,7 @@ public class NettyServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         //work 线程组用于数据处理
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        log.info("netty 准备运行端口：" + 9999);
+        log.info("netty 准备运行端口：" + 9990);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -57,7 +60,7 @@ public class NettyServer {
                             .childOption(ChannelOption.SO_KEEPALIVE,true)
                             .childHandler(new HeartbeatInitializer());
                     //绑定端口，同步等待成功
-                    ChannelFuture f = bootstrap.bind("127.0.0.1",9999).sync();
+                    ChannelFuture f = bootstrap.bind("127.0.0.1",9990).sync();
                     //等待服务监听端口关闭
                     f.channel().closeFuture().sync();
                 } catch (InterruptedException e) {

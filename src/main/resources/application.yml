@@ -1,6 +1,6 @@
 # Server settings  
 server:
-  port: 8090
+  port: 8080
   address: 127.0.0.1
 # SPRING PROFILES  
 spring:
@@ -83,7 +83,7 @@ rocketmq:
   # 消费者配置
   consumer:
   # 官方建议：确保同一组中的每个消费者订阅相同的主题。
-    group: PID_xyy_saas_product_test_provider
+    group: PID_xyy_saas_product_test
     # 接收该 Topic 下所有 Tag
     topics: xyy_saas_product_test
     consumeThreadMin: 20
@@ -93,7 +93,7 @@ rocketmq:
 dubbo:
   application:
     #当前服务名称
-    name: springboot-provider
+    name: springboot-customer
     #telnet端口号
     qos-port: 23200
     #当前应用的版本
@@ -104,7 +104,7 @@ dubbo:
     #协议名称
     name: dubbo
     #服务端口
-    port: 20881
+    port: 20880
     #请求及相应数据包大小限制字节8M
     payload: 8388608
     threadpool: fixed

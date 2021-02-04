@@ -1,5 +1,7 @@
 package wlw.zc.demo.system.entity;
 
+import org.springframework.stereotype.Component;
+
 import java.math.BigDecimal;
 import java.util.Date;
 

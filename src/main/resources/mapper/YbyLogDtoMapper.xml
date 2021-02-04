@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="wlw.zc.demo.system.dao.YbyLogDtoMapper">
+  <resultMap id="BaseResultMap" type="wlw.zc.demo.system.entity.YbyLogDto">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_name" jdbcType="VARCHAR" property="userName" />
+    <result column="account" jdbcType="VARCHAR" property="account" />
+    <result column="staff_Num" jdbcType="VARCHAR" property="staffNum" />
+    <result column="menu" jdbcType="VARCHAR" property="menu" />
+    <result column="operation" jdbcType="VARCHAR" property="operation" />
+    <result column="method" jdbcType="VARCHAR" property="method" />
+    <result column="params" jdbcType="VARCHAR" property="params" />
+    <result column="data" jdbcType="VARCHAR" property="data" />
+    <result column="ip" jdbcType="VARCHAR" property="ip" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_name, account, staff_Num, menu, operation, method, params, data, ip, create_time
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from yby_log
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from yby_log
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="wlw.zc.demo.system.entity.YbyLogDto">
+    insert into yby_log (id, user_name, account, 
+      staff_Num, menu, operation, 
+      method, params, data, 
+      ip, create_time)
+    values (#{id,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR}, #{account,jdbcType=VARCHAR}, 
+      #{staffNum,jdbcType=VARCHAR}, #{menu,jdbcType=VARCHAR}, #{operation,jdbcType=VARCHAR}, 
+      #{method,jdbcType=VARCHAR}, #{params,jdbcType=VARCHAR}, #{data,jdbcType=VARCHAR}, 
+      #{ip,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  <insert id="insertSelective" parameterType="wlw.zc.demo.system.entity.YbyLogDto">
+    insert into yby_log
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userName != null">
+        user_name,
+      </if>
+      <if test="account != null">
+        account,
+      </if>
+      <if test="staffNum != null">
+        staff_Num,
+      </if>
+      <if test="menu != null">
+        menu,
+      </if>
+      <if test="operation != null">
+        operation,
+      </if>
+      <if test="method != null">
+        method,
+      </if>
+      <if test="params != null">
+        params,
+      </if>
+      <if test="data != null">
+        data,
+      </if>
+      <if test="ip != null">
+        ip,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userName != null">
+        #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null">
+        #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="staffNum != null">
+        #{staffNum,jdbcType=VARCHAR},
+      </if>
+      <if test="menu != null">
+        #{menu,jdbcType=VARCHAR},
+      </if>
+      <if test="operation != null">
+        #{operation,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="data != null">
+        #{data,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null">
+        #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="wlw.zc.demo.system.entity.YbyLogDto">
+    update yby_log
+    <set>
+      <if test="userName != null">
+        user_name = #{userName,jdbcType=VARCHAR},
+      </if>
+      <if test="account != null">
+        account = #{account,jdbcType=VARCHAR},
+      </if>
+      <if test="staffNum != null">
+        staff_Num = #{staffNum,jdbcType=VARCHAR},
+      </if>
+      <if test="menu != null">
+        menu = #{menu,jdbcType=VARCHAR},
+      </if>
+      <if test="operation != null">
+        operation = #{operation,jdbcType=VARCHAR},
+      </if>
+      <if test="method != null">
+        method = #{method,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        params = #{params,jdbcType=VARCHAR},
+      </if>
+      <if test="data != null">
+        data = #{data,jdbcType=VARCHAR},
+      </if>
+      <if test="ip != null">
+        ip = #{ip,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="wlw.zc.demo.system.entity.YbyLogDto">
+    update yby_log
+    set user_name = #{userName,jdbcType=VARCHAR},
+      account = #{account,jdbcType=VARCHAR},
+      staff_Num = #{staffNum,jdbcType=VARCHAR},
+      menu = #{menu,jdbcType=VARCHAR},
+      operation = #{operation,jdbcType=VARCHAR},
+      method = #{method,jdbcType=VARCHAR},
+      params = #{params,jdbcType=VARCHAR},
+      data = #{data,jdbcType=VARCHAR},
+      ip = #{ip,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

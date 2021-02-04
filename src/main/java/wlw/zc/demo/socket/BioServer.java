@@ -19,7 +19,7 @@ public class BioServer {
     private Executor executor;
     @PostConstruct
     public  void run() {
-        int port = 9000;
+        int port = 9100;
         try {
             executor.execute(new Runnable() {
                 @SneakyThrows

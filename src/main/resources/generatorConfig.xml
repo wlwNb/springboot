@@ -16,9 +16,9 @@
 
         <!-- 数据库连接 -->
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.7.28:3306/test?useUnicode=true&amp;characterEncoding=UTF-8"
-                        userId="root"
-                        password="root">
+                        connectionURL="jdbc:mysql://db01-medicare-dev.mysql.ybm100.top:3308/xyy_saas_medicare?useUnicode=true&amp;characterEncoding=UTF-8"
+                        userId="u_dev_w"
+                        password="DtASChglhaE5Uh86">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -42,7 +42,7 @@
         </javaClientGenerator>
 
         <!-- 数据表进行生成操作 schema:相当于库名; tableName:表名; domainObjectName:对应的DO -->
-        <table schema="test" tableName="saas_medical_product" domainObjectName="Product"
+        <table schema="test" tableName="yby_log" domainObjectName="YbyLogDto"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">

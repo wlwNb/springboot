@@ -86,7 +86,7 @@ public class NettyClient {
             return;
         }
 
-        ChannelFuture future = bootstrap.connect("127.0.0.1", 9999);
+        ChannelFuture future = bootstrap.connect("127.0.0.1", 9990);
 
         future.addListener(new ChannelFutureListener() {
             public void operationComplete(ChannelFuture futureListener) throws Exception {
