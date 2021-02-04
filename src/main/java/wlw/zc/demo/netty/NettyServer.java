@@ -42,7 +42,7 @@ public class NettyServer {
         EventLoopGroup bossGroup = new NioEventLoopGroup();
         //work 线程组用于数据处理
         EventLoopGroup workerGroup = new NioEventLoopGroup();
-        log.info("netty 准备运行端口：" + 9990);
+        log.info("netty 准备运行端口：" + 9991);
         executor.execute(new Runnable() {
             @Override
             public void run() {
@@ -60,7 +60,7 @@ public class NettyServer {
                             .childOption(ChannelOption.SO_KEEPALIVE,true)
                             .childHandler(new HeartbeatInitializer());
                     //绑定端口，同步等待成功
-                    ChannelFuture f = bootstrap.bind("127.0.0.1",9990).sync();
+                    ChannelFuture f = bootstrap.bind("127.0.0.1",9991).sync();
                     //等待服务监听端口关闭
                     f.channel().closeFuture().sync();
                 } catch (InterruptedException e) {

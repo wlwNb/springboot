@@ -43,8 +43,8 @@ public class NIOLowServer {
                 // 服务器配置为非阻塞
                 ssc.configureBlocking(false);
                 // 进行服务的绑定
-                ssc.bind(new InetSocketAddress("localhost", 8101));
-                log.info("nio low 准备运行端口 8001");
+                ssc.bind(new InetSocketAddress("localhost", 8201));
+                log.info("nio low 准备运行端口 8201");
                 // 通过open()方法找到Selector
                 //selector = Selector.open();
                 // 注册到selector，等待连接

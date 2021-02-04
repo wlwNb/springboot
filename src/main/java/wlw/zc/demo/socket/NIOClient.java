@@ -24,7 +24,7 @@ public class NIOClient {
         //设置为非阻塞
         sc.configureBlocking(false);
         //连接服务器地址和端口
-        sc.connect(new InetSocketAddress("localhost", 8101));
+        sc.connect(new InetSocketAddress("localhost", 9102));
         //打开选择器
         Selector selector = Selector.open();
         //注册连接服务器socket的动作

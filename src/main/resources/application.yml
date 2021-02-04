@@ -1,6 +1,6 @@
 # Server settings  
 server:
-  port: 8080
+  port: 8090
   address: 127.0.0.1
 # SPRING PROFILES  
 spring:
@@ -93,7 +93,7 @@ rocketmq:
 dubbo:
   application:
     #当前服务名称
-    name: springboot-customer
+    name: springboot-provider
     #telnet端口号
     qos-port: 23200
     #当前应用的版本

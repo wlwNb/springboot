@@ -34,7 +34,7 @@ public class NIOServer {
                 // 服务器配置为非阻塞
                 ssc.configureBlocking(false);
                 // 进行服务的绑定
-                ssc.bind(new InetSocketAddress("localhost", 9101));
+                ssc.bind(new InetSocketAddress("localhost", 9102));
                 log.info("nio high 准备运行端口 9001");
                 // 通过open()方法找到Selector
                 selector = Selector.open();
