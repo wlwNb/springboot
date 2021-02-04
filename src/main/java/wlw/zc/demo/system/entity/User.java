@@ -1,37 +1,23 @@
 package wlw.zc.demo.system.entity;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Set;
 
 @Data
+@AllArgsConstructor
+@Builder
 public class User implements Serializable {
-	private Integer id;
-	private String username;
-	private Integer state;
+	private String id;
+	private String userName;
+	private String password;
+	/**
+	 * 用户对应的角色集合
+	 */
+	private Set<Role> roles;
 
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
-	}
-
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
-	}
 
 }

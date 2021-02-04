@@ -24,7 +24,6 @@ public class NIOServer {
     private ByteBuffer sendBuffer = ByteBuffer.allocate(1024);//调整缓存的大小可以看到打印输出的变化
 
     String str;
-    @PostConstruct
     public void start() throws IOException {
         executor.execute(new Runnable() {
             @SneakyThrows

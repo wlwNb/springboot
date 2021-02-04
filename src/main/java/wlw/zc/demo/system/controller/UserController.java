@@ -6,27 +6,43 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.remoting.common.RemotingHelper;
 import org.apache.rocketmq.remoting.exception.RemotingException;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.UnknownAccountException;
+import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.AuthorizationException;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.subject.Subject;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import wlw.zc.demo.config.UserRealm;
 import wlw.zc.demo.netty.NettyServer;
 import wlw.zc.demo.socket.NIOLowServer;
 import wlw.zc.demo.system.dao.SaasMedicalProductMapper;
 import wlw.zc.demo.system.entity.SaasMedicalProduct;
+import wlw.zc.demo.system.entity.UploadFile;
+import wlw.zc.demo.system.entity.User;
 
 import javax.annotation.Resource;
 
 @RestController
+@Slf4j
 public class UserController {
+	@Autowired
+	private UserRealm userRealm;
 	@Autowired
 	private RedisTemplate redisTemplate;
 	@Resource
@@ -37,6 +53,8 @@ public class UserController {
 	private NettyServer discardServer;
 	@Resource
 	private NIOLowServer nioLowServer;
+	@Autowired
+	private RedissonClient redissonClient;
 	@RequestMapping("/regiester")
 	public String regiester(Map<String, Object> model){
 		redisTemplate.opsForValue().set("id","1111111111");
@@ -56,8 +74,54 @@ public class UserController {
 	}
 
 	@GetMapping("/select")
+	@RequiresPermissions("ttt")
 	public String select(){
+		RLock lock = redissonClient.getLock("1");
+		lock.lock();
 		List<SaasMedicalProduct> saasMedicalProducts = mapper.listDataByIds(Arrays.asList(111732909L, 111732937L));
 		return JSON.toJSONString(saasMedicalProducts);
+	}
+
+	@PostMapping("/importFile")
+	public String importFile(UploadFile uploadFile){
+		RLock lock = redissonClient.getLock("1");
+		lock.lock();
+		List<SaasMedicalProduct> saasMedicalProducts = mapper.listDataByIds(Arrays.asList(111732909L, 111732937L));
+		return JSON.toJSONString(saasMedicalProducts);
+	}
+
+	@GetMapping("/login")
+	public String login(User user){
+		if (StringUtils.isEmpty(user.getUserName()) || StringUtils.isEmpty(user.getPassword())) {
+			return "请输入用户名和密码！";
+		}
+		//用户认证信息
+		Subject subject = SecurityUtils.getSubject();
+		UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(
+				user.getUserName(),
+				user.getPassword()
+		);
+		try {
+			//进行验证，这里可以捕获异常，然后返回对应信息
+			subject.login(usernamePasswordToken);
+//            subject.checkRole("admin");
+//            subject.checkPermissions("query", "add");
+		} catch (UnknownAccountException e) {
+			log.error("用户名不存在！", e);
+			return "用户名不存在！";
+		} catch (AuthenticationException e) {
+			log.error("账号或密码错误！", e);
+			return "账号或密码错误！";
+		} catch (AuthorizationException e) {
+			log.error("没有权限！", e);
+			return "没有权限";
+		}
+		return "login success";
+	}
+
+
+	@GetMapping("error")
+	public String error(){
+		return "登陆失败";
 	}
 }

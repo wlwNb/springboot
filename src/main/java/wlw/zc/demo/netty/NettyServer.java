@@ -27,7 +27,7 @@ public class NettyServer {
     private HeartbeatInitializer heartbeatInitializer;
     //启动Netty Server
     @PostConstruct
-    public static void run() throws Exception {
+    public void run() throws Exception {
         /**
          * NioEventLoop并不是一个纯粹的I/O线程，它除了负责I/O的读写之外
          * 创建了两个NioEventLoopGroup，
@@ -40,34 +40,39 @@ public class NettyServer {
         //work 线程组用于数据处理
         EventLoopGroup workerGroup = new NioEventLoopGroup();
         log.info("netty 准备运行端口：" + 9999);
-                    try {
-                        ServerBootstrap bootstrap = new ServerBootstrap();
-                        bootstrap.group(bossGroup, workerGroup)
-                                //指定Channel
-                                .channel(NioServerSocketChannel.class)
-                                /*ChannelOption.SO_BACKLOG对应的是tcp/ip协议listen函数中的backlog参数。函数listen(int socketfd, int backlog)用来初始化服务端可连接队列。
-                                服务端处理客户端连接请求是顺序处理的，所以同一时间只能处理一个客户端连接，
-                                多个客户端来的时候，服务端将不能处理的客户端连接请求放在队列中等待处理，backlog参数指定了队列的大小。*/
-                                .childOption(ChannelOption.SO_BACKLOG,128)
-                                /*ChannelOption.SO_BACKLOG对应的是tcp/ip协议listen函数中的backlog参数。函数listen(int socketfd, int backlog)用来初始化服务端可连接队列。
-                                 服务端处理客户端连接请求是顺序处理的，所以同一时间只能处理一个客户端连接，多个客户端来的时候，服务端将不能处理的客户端连接请求放在队列中等待处理，backlog参数指定了队列的大小。*/
-                                .childOption(ChannelOption.SO_KEEPALIVE,true)
-                                .childHandler(new ChildChannelHandler());
-                        //绑定端口，同步等待成功
-                        ChannelFuture f = bootstrap.bind("127.0.0.1",9999).sync();
-                        //等待服务监听端口关闭
-                        f.channel().closeFuture().sync();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-         finally {
-            //退出，释放线程资源
-            workerGroup.shutdownGracefully();
-            bossGroup.shutdownGracefully();
-        }
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ServerBootstrap bootstrap = new ServerBootstrap();
+                    bootstrap.group(bossGroup, workerGroup)
+                            //指定Channel
+                            .channel(NioServerSocketChannel.class)
+                            /*ChannelOption.SO_BACKLOG对应的是tcp/ip协议listen函数中的backlog参数。函数listen(int socketfd, int backlog)用来初始化服务端可连接队列。
+                            服务端处理客户端连接请求是顺序处理的，所以同一时间只能处理一个客户端连接，
+                            多个客户端来的时候，服务端将不能处理的客户端连接请求放在队列中等待处理，backlog参数指定了队列的大小。*/
+                            .childOption(ChannelOption.SO_BACKLOG,128)
+                            /*ChannelOption.SO_BACKLOG对应的是tcp/ip协议listen函数中的backlog参数。函数listen(int socketfd, int backlog)用来初始化服务端可连接队列。
+                             服务端处理客户端连接请求是顺序处理的，所以同一时间只能处理一个客户端连接，多个客户端来的时候，服务端将不能处理的客户端连接请求放在队列中等待处理，backlog参数指定了队列的大小。*/
+                            .childOption(ChannelOption.SO_KEEPALIVE,true)
+                            .childHandler(new HeartbeatInitializer());
+                    //绑定端口，同步等待成功
+                    ChannelFuture f = bootstrap.bind("127.0.0.1",9999).sync();
+                    //等待服务监听端口关闭
+                    f.channel().closeFuture().sync();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                finally {
+                    //退出，释放线程资源
+                    workerGroup.shutdownGracefully();
+                    bossGroup.shutdownGracefully();
+                }
+            }
+        });
     }
 
     public static void main(String[] args) throws Exception {
-        run();
+        //run();
     }
 }

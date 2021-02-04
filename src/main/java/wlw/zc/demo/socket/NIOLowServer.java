@@ -32,7 +32,7 @@ public class NIOLowServer {
     private ByteBuffer readBuffer = ByteBuffer.allocate(1024);//调整缓存的大小可以看到打印输出的变化
     private ByteBuffer sendBuffer = ByteBuffer.allocate(1024);//调整缓存的大小可以看到打印输出的变化
     private List<SocketChannel> clients = new LinkedList<>();
-    @PostConstruct
+
     public void start() throws IOException, InterruptedException {
         executor.execute(new Runnable() {
             @SneakyThrows
