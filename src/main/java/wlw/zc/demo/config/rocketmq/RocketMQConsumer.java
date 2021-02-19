@@ -15,15 +15,15 @@ import javax.annotation.Resource;
 public class RocketMQConsumer {
     @Value("${rocketmq.name-server}")
     private String namesrvAddr;
-    @Value("${rocketmq.consumer.group}")
+    @Value("${rocketmq.consumer.wlw.group}")
     private String groupName;
-    @Value("${rocketmq.consumer.consumeThreadMin}")
+    @Value("${rocketmq.consumer.wlw.consumeThreadMin}")
     private int consumeThreadMin;
-    @Value("${rocketmq.consumer.consumeThreadMax}")
+    @Value("${rocketmq.consumer.wlw.consumeThreadMax}")
     private int consumeThreadMax;
-    @Value("${rocketmq.consumer.topics}")
+    @Value("${rocketmq.consumer.wlw.topics}")
     private String topics;
-    @Value("${rocketmq.consumer.consumeMessageBatchMaxSize}")
+    @Value("${rocketmq.consumer.wlw.consumeMessageBatchMaxSize}")
     private int consumeMessageBatchMaxSize;
     @Resource
     private RocketMsgListener msgListener;

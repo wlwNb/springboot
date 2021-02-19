@@ -68,66 +68,44 @@ mybatis-plus:
     default-fetch-size: 100
   mapper-locations: classpath:mapper/*.xml
 rocketmq:
-  # 服务地址
   name-server: 115.159.144.187:9876
-# 生产者配置
   producer:
-    # 发送同一类消息的设置为同一个group，保证唯一
-    group: PID_xyy_saas_product_test
-    # 消息最大长度 默认1024*4(4M)rocketmq.producer.group
+    wlw:
+      group: wlw_test_producer_group
     maxMessageSize: 4096
-    # 发送消息失败重试次数，默认2
     retryTimesWhenSendFailed: 2
-    # 发送消息超时时间,默认3000
     send-message-timeout: 3000
-  # 消费者配置
   consumer:
-  # 官方建议：确保同一组中的每个消费者订阅相同的主题。
-    group: PID_xyy_saas_product_test
-    # 接收该 Topic 下所有 Tag
-    topics: xyy_saas_product_test
-    consumeThreadMin: 20
-    consumeThreadMax: 64
-    # 设置一次消费消息的条数，默认为1条
-    consumeMessageBatchMaxSize: 1
+    wlw:
+      group: wlw_test_consumer_group
+      topics: topic_test
+      consumeThreadMin: 20
+      consumeThreadMax: 64
+      consumeMessageBatchMaxSize: 1
 dubbo:
   application:
-    #当前服务名称
     name: springboot-provider
     #telnet端口号
     qos-port: 23200
-    #当前应用的版本
     version: 1.0.0
   protocol:
-    #协议BeanId
     id: dubbo
-    #协议名称
     name: dubbo
-    #服务端口
     port: 20880
     #请求及相应数据包大小限制字节8M
     payload: 8388608
     threadpool: fixed
     threads: 500
   registry:
-      #注册中心地址协议
       protocol: zookeeper
-      #注册中心服务器地址，同一集群内的多个地址用逗号分隔
       address: 115.159.144.187:2181,115.159.144.187:2182,115.159.144.187:2183
-      #注册中心不存在时，是否报错
       check: false
-      #注册中心请求超时时间(毫秒)
       timeout: 6000
       default: true
   consumer:
-      #启动时检查提供者是否存在，true报错，false忽略
       check: false
-      #远程服务调用超时时间(毫秒)
       timeout: 6000
   provider:
-      #远程服务调用超时时间(毫秒)
       timeout: 6000
-      #远程服务调用重试次数，不包括第一次调用，不需要重试请设为0
       retries: -1
-      #请求及响应数据包大小限制，单位：字节
       payload: 8388608

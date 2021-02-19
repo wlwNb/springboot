@@ -1,12 +1,9 @@
 package wlw.zc.demo.system.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQBrokerException;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -33,9 +30,6 @@ import wlw.zc.demo.config.UserRealm;
 import wlw.zc.demo.netty.NettyServer;
 import wlw.zc.demo.socket.NIOLowServer;
 import wlw.zc.demo.spring.SpringApplicationContext;
-import wlw.zc.demo.system.dao.SaasMedicalProductMapper;
-import wlw.zc.demo.system.entity.Product;
-import wlw.zc.demo.system.entity.SaasMedicalProduct;
 import wlw.zc.demo.system.entity.UploadFile;
 import wlw.zc.demo.system.entity.User;
 
@@ -50,8 +44,6 @@ public class UserController {
 	private RedisTemplate redisTemplate;
 	@Resource
 	private DefaultMQProducer producer;
-	@Resource
-	private SaasMedicalProductMapper mapper;
 	@Resource
 	private NettyServer discardServer;
 	@Resource
@@ -68,7 +60,7 @@ public class UserController {
 	@RequestMapping("/send")
 	public void send(Map<String, Object> model) throws UnsupportedEncodingException, InterruptedException, RemotingException, MQClientException, MQBrokerException {
 		System.out.println(orderService.send());
-		SpringApplicationContext.getBean(Product.class);
+		//SpringApplicationContext.getBean(Product.class);
 		for (int i = 0; i < 100; i++) {
 			Message msg = new Message("xyy_saas_product_test",
 					"",
@@ -83,16 +75,18 @@ public class UserController {
 	public String select(){
 		RLock lock = redissonClient.getLock("1");
 		lock.lock();
-		List<SaasMedicalProduct> saasMedicalProducts = mapper.listDataByIds(Arrays.asList(111732909L, 111732937L));
-		return JSON.toJSONString(saasMedicalProducts);
+		//List<SaasMedicalProduct> saasMedicalProducts = mapper.listDataByIds(Arrays.asList(111732909L, 111732937L));
+		//return JSON.toJSONString(saasMedicalProducts);
+		return null;
 	}
 
 	@PostMapping("/importFile")
 	public String importFile(UploadFile uploadFile){
 		RLock lock = redissonClient.getLock("1");
 		lock.lock();
-		List<SaasMedicalProduct> saasMedicalProducts = mapper.listDataByIds(Arrays.asList(111732909L, 111732937L));
-		return JSON.toJSONString(saasMedicalProducts);
+		//List<SaasMedicalProduct> saasMedicalProducts = mapper.listDataByIds(Arrays.asList(111732909L, 111732937L));
+		return null;
+		//return JSON.toJSONString(saasMedicalProducts);
 	}
 
 	@PostMapping("/login")
