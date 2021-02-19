@@ -2,53 +2,78 @@
 <!DOCTYPE generatorConfiguration
         PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
         "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
-
+<!-- 配置生成器 -->
 <generatorConfiguration>
-    <!-- 配置mysql 驱动jar包路径.用了绝对路径 -->
-    <classPathEntry location="E:\gitHome\mysql\mysql-connector-java\5.1.46\mysql-connector-java-5.1.46.jar" />
+    <!--执行generator插件生成文件的命令： call mvn mybatis-generator:generate -e -->
+    <!-- 引入配置文件 -->
+    <properties resource="generator.properties"/>
+    <!--classPathEntry:数据库的JDBC驱动,换成你自己的驱动位置 可选 -->
+    <classPathEntry
+            location="E:\gitHome\mysql\mysql-connector-java\8.0.21\mysql-connector-java-8.0.21.jar"/>
 
-    <context id="wlw_mysql_tables" targetRuntime="MyBatis3">
-        <!-- 防止生成的代码中有很多注释，加入下面的配置控制 -->
+    <!-- 一个数据库一个context -->
+    <!--defaultModelType="flat" 大数据字段，不分表 -->
+    <context id="MysqlTables" targetRuntime="MyBatis3Simple" defaultModelType="flat">
+        <!-- 自动识别数据库关键字，默认false，如果设置为true，根据SqlReservedWords中定义的关键字列表；
+        一般保留默认值，遇到数据库关键字（Java关键字），使用columnOverride覆盖 -->
+        <property name="autoDelimitKeywords" value="true"/>
+        <!-- 生成的Java文件的编码 -->
+        <property name="javaFileEncoding" value="utf-8"/>
+        <!-- beginningDelimiter和endingDelimiter：指明数据库的用于标记数据库对象名的符号，比如ORACLE就是双引号，MYSQL默认是`反引号； -->
+        <property name="beginningDelimiter" value="`"/>
+        <property name="endingDelimiter" value="`"/>
+
+        <!-- 格式化java代码 -->
+        <property name="javaFormatter" value="org.mybatis.generator.api.dom.DefaultJavaFormatter"/>
+        <!-- 格式化XML代码 -->
+        <property name="xmlFormatter" value="org.mybatis.generator.api.dom.DefaultXmlFormatter"/>
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+        <!--覆盖xml文件-->
+        <plugin type="com.xqnode.boot.util.OverwriteXmlPlugin"/>
+        <!--toString-->
+        <!--<plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>-->
+        <plugin type="tk.mybatis.mapper.generator.MapperPlugin">
+            <property name="mappers" value="tk.mybatis.mapper.common.Mapper"/>
+        </plugin>
+
+        <!-- 注释   type="com.xqnode.boot.util.CommentGenerator" -->
         <commentGenerator>
-            <property name="suppressAllComments" value="true" />
-            <property name="suppressDate" value="true" />
+            <property name="suppressAllComments" value="true"/><!-- 是否取消注释 -->
+            <property name="suppressDate" value="true"/> <!-- 是否生成注释代时间戳-->
         </commentGenerator>
 
-        <!-- 数据库连接 -->
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://db01-medicare-dev.mysql.ybm100.top:3308/xyy_saas_medicare?useUnicode=true&amp;characterEncoding=UTF-8"
-                        userId="u_dev_w"
-                        password="DtASChglhaE5Uh86">
-        </jdbcConnection>
-
-        <javaTypeResolver >
-            <property name="forceBigDecimals" value="false" />
+        <!-- jdbc连接  &amp;表示 & -->
+        <jdbcConnection driverClass="${jdbc.driverClass}"
+                        connectionURL="${jdbc.connectionURL}"
+                        userId="${jdbc.userId}"
+                        password="${jdbc.password}"/>
+        <!-- 类型转换 -->
+        <javaTypeResolver>
+            <!-- 是否使用bigDecimal， false可自动转化以下类型（Long, Integer, Short, etc.） -->
+            <property name="forceBigDecimals" value="false"/>
         </javaTypeResolver>
 
-        <!-- 数据表对应的model层  -->
-        <javaModelGenerator targetPackage="wlw.zc.demo.system.entity" targetProject="src/main/java">
-            <property name="enableSubPackages" value="true" />
-            <property name="trimStrings" value="true" />
+        <!-- 生成实体类地址 -->
+        <javaModelGenerator targetPackage="com.xqnode.boot.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="false"/>
+            <property name="trimStrings" value="true"/>
         </javaModelGenerator>
-
-        <!-- sql mapper 映射配置文件 -->
-        <sqlMapGenerator targetPackage="mapper/"  targetProject="src/main/resources">
-            <property name="enableSubPackages" value="true" />
+        <!-- 生成mapxml文件 -->
+        <sqlMapGenerator targetPackage="mapper" targetProject="src/main/resources">
+            <property name="enableSubPackages" value="false"/>
         </sqlMapGenerator>
-
-        <!-- mybatis3中的mapper接口 -->
-        <javaClientGenerator type="XMLMAPPER" targetPackage="wlw.zc.demo.system.dao"  targetProject="src/main/java">
-            <property name="enableSubPackages" value="true" />
+        <!-- 生成mapxml对应client，也就是接口dao -->
+        <javaClientGenerator targetPackage="com.xqnode.boot.dao" targetProject="src/main/java"
+                             type="XMLMAPPER">
+            <property name="enableSubPackages" value="false"/>
         </javaClientGenerator>
-
-        <!-- 数据表进行生成操作 schema:相当于库名; tableName:表名; domainObjectName:对应的DO -->
-        <table schema="test" tableName="yby_log" domainObjectName="YbyLogDto"
-               enableCountByExample="false" enableUpdateByExample="false"
-               enableDeleteByExample="false" enableSelectByExample="false"
-               selectByExampleQueryId="false">
-            <columnOverride column="medical_status" javaType="java.lang.Integer"/>
-
+        <!-- table可以有多个,每个数据库中的表都可以写一个table，tableName表示要匹配的数据库表,也可以在tableName属性中通过使用%通配符来匹配所有数据库表,只有匹配的表才会自动生成文件 -->
+        <!-- tableName=% 则匹配数据库的所有表，注意将domainObjectName和mapperName置为空-->
+        <!-- enableCountByExample等设置生成简单的crud操作方法-->
+        <table tableName="${table.name}" domainObjectName="${domain.object.name}" mapperName="${mapper.name}">
+            <property name="useActualColumnNames" value="false"/>
+            <!-- 数据库表主键 -->
+            <generatedKey column="id" sqlStatement="Mysql" identity="true"/>
         </table>
-
     </context>
 </generatorConfiguration>
