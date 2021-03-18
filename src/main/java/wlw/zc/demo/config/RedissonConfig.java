@@ -18,9 +18,16 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.StringUtils;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.JedisPoolConfig;
 
+import javax.sql.DataSource;
 import java.io.IOException;
+import java.sql.SQLException;
 
 @Configuration
 public class RedissonConfig {
@@ -30,7 +37,26 @@ public class RedissonConfig {
     private String port;
     @Value("${spring.redis.password}")
     private String password;
+    @Value("${spring.redis.timeout}")
+    private int timeout;
+    @Value("${spring.redis.jedis.pool.max-active}")
+    private int maxActive;
+    @Value("${spring.redis.jedis.pool.max-idle}")
+    private int maxIdle;
+    @Value("${spring.redis.jedis.pool.min-idle}")
+    private int minIdle;
 
+    private long maxWaitMillis;
+    @Bean
+    public JedisPool generateJedisPoolFactory() {
+        JedisPoolConfig poolConfig = new JedisPoolConfig();
+        poolConfig.setMaxTotal(maxActive);
+        poolConfig.setMaxIdle(maxIdle);
+        poolConfig.setMinIdle(minIdle);
+        poolConfig.setMaxWaitMillis(maxWaitMillis);
+        JedisPool jedisPool = new JedisPool(poolConfig, host, Integer.valueOf(port), timeout, password);
+        return jedisPool;
+    }
 
     @Bean
     public RedissonClient redissonClient() {
@@ -64,6 +90,12 @@ public class RedissonConfig {
         return new RedissonConnectionFactory(redisson);
     }*/
 
+    //配置事务管理器
+    @Bean
+    public PlatformTransactionManager transactionManager(DataSource dataSource) throws SQLException {
+        return new DataSourceTransactionManager(dataSource);
+    }
+
     @Bean("redisTemplate")
     public RedisTemplate getRedisTemplate(RedisConnectionFactory redissonConnectionFactory) {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate();
@@ -72,6 +104,7 @@ public class RedissonConfig {
         redisTemplate.setKeySerializer(keySerializer());
         redisTemplate.setHashKeySerializer(keySerializer());
         redisTemplate.setHashValueSerializer(valueSerializer());
+        redisTemplate.setEnableTransactionSupport(true);
         return redisTemplate;
     }
 

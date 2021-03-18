@@ -19,7 +19,8 @@ public class Executor {
      */
     private static void submit(Runnable runnable) throws InterruptedException, ExecutionException, TimeoutException {
         Future<?> future = fixedPool.submit(runnable);
-        future.get(10, TimeUnit.SECONDS);
+        future.get(1, TimeUnit.SECONDS);
+        System.out.println("执行完了");
     }
 
     /**
@@ -33,7 +34,8 @@ public class Executor {
      */
     private static <T> void submit(Runnable runnable, T clazz) throws InterruptedException, ExecutionException, TimeoutException {
         Future<T> future = fixedPool.submit(runnable, clazz);
-        future.get(10, TimeUnit.SECONDS);
+        future.get(1, TimeUnit.SECONDS);
+        System.out.println("执行完了");
     }
 
     private static <T> void submit(Callable<T> callable) throws InterruptedException, ExecutionException, TimeoutException {
@@ -51,7 +53,16 @@ public class Executor {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException, TimeoutException {
         submit(() -> {
-            return "success";
+            try {
+                Thread.sleep(1500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            System.out.println("running");
         });
+
+        ExecutorService executor = Executors.newCachedThreadPool();
+        FutureTask<Integer> futureTask = new FutureTask<Integer>(() -> null);
+        executor.submit(futureTask);
     }
 }

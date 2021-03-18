@@ -33,12 +33,12 @@ spring:
   redis:
     timeout: 30000
     database: 7
-    lettuce:
+    jedis:
       pool:
-        max-active: 256
-        max-idle: 64
-        max-wait: 30000
-        min-idle: 32
+        max-active: 200
+        max-idle: 10
+        max-wait: 1000
+        min-idle: 10
     password: wlw
     host: 115.159.144.187
     port: 7001
@@ -72,9 +72,9 @@ rocketmq:
   producer:
     wlw:
       group: wlw_test_producer_group
-    maxMessageSize: 4096
-    retryTimesWhenSendFailed: 2
-    send-message-timeout: 3000
+      maxMessageSize: 4096
+      retryTimesWhenSendFailed: 2
+      send-message-timeout: 3000
   consumer:
     wlw:
       group: wlw_test_consumer_group
@@ -85,8 +85,6 @@ rocketmq:
 dubbo:
   application:
     name: springboot-provider
-    #telnet端口号
-    qos-port: 23200
     version: 1.0.0
   protocol:
     id: dubbo

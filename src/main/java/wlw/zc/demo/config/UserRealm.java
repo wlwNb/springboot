@@ -1,5 +1,6 @@
 package wlw.zc.demo.config;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -26,6 +27,7 @@ import java.util.Set;
 public class UserRealm extends AuthorizingRealm {
     @Autowired
     private LoginService loginService;
+
     /**
      * 模拟数据库查询
      *
@@ -107,7 +109,46 @@ public class UserRealm extends AuthorizingRealm {
     }
 
     public static void main(String[] args) {
-        String s = "1,2\3$5";
-        s.split(",|\\||\\$");
+
+        int[] a = {9, 11, 55, 2, 36, 87, 15, 6};
+        //冒泡
+        for(int i=0;i<a.length;i++) {
+            for (int j = 0; j < a.length - 1; j++) {
+                if (a[j] > a[j + 1]) {
+                    int t = a[j];
+                    a[j] = a[j + 1];
+                    a[j + 1] = t;
+                }
+            }
+            System.out.println(JSON.toJSON(a));
+        }
+        //选择
+        for (int i = 0; i < a.length; i++) {
+            for (int j = i; j < a.length; j++) {
+                if (a[i] > a[j]) {
+                    int t = a[j];
+                    a[j] = a[i];
+                    a[i] = t;
+                }
+            }
+            System.out.println(JSON.toJSON(a));
+        }
+
+            //插入
+        for(int i=0;i<a.length;i++) {
+            for (int j = i; j > 0; j--) {
+                if (a[j] < a[j - 1]) {
+                    int t = a[j];
+                    a[j] = a[j - 1];
+                    a[j - 1] = t;
+                }else{
+                    break;
+                } System.out.println(JSON.toJSON(a));
+            }
+        }
+
+
+      /*  String s = "1,2\3$5";
+        s.split(",|\\||\\$");*/
     }
 }

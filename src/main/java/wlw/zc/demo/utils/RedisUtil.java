@@ -2,9 +2,19 @@ package wlw.zc.demo.utils;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SessionCallback;
 import org.springframework.data.redis.core.StringRedisTemplate;
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Response;
+import redis.clients.jedis.Transaction;
+import wlw.zc.demo.spring.SpringApplicationContext;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -15,7 +25,9 @@ import java.util.concurrent.TimeUnit;
 public class RedisUtil {
 
     private static final Long SUCCESS = 1L;
-
+    private static final String SET_IF_NOT_EXIST = "NX";
+    private static final String SET_WITH_EXPIRE_TIME = "PX";
+    private static final String LOCK_PREFIX = "wlw_";
 
     /**
      * 加锁
@@ -29,7 +41,7 @@ public class RedisUtil {
         if (redisTemplate.opsForValue().setIfAbsent(key, value)) {
             return true;
         }
-
+        //TODO 有问题，value是System.currentTimeMillis() + 2000，在集群情况下，可能出现主机时间不一致的情况，getAndSet会覆盖原值。
         //获取key的值，判断是是否超时
         String curVal = redisTemplate.opsForValue().get(key);
         if (StringUtils.isNotEmpty(curVal) && Long.parseLong(curVal) < System.currentTimeMillis()) {
@@ -43,6 +55,41 @@ public class RedisUtil {
         return false;
     }
 
+    public static  boolean tryLock(Jedis jedis,String key, String request) {
+        Transaction transaction = jedis.multi();
+        Response<String> response = transaction.set(LOCK_PREFIX + key, request, SET_IF_NOT_EXIST, SET_WITH_EXPIRE_TIME, 10000);
+        transaction.get(LOCK_PREFIX + key);
+        transaction.exec();
+        response.get();
+        if ("OK".equals("result")){
+            return true ;
+        }else {
+            return false ;
+        }
+    }
+
+    /**
+     * 释放分布式锁
+     * @param lockKey 锁
+     * @param requestId 请求标识
+     * @return 是否释放成功
+     */
+    public static boolean releaseDistributedLock(Jedis jedis,String lockKey, String requestId) {
+        Transaction transaction = jedis.multi();
+        String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
+        //Object result = jedis.eval(script, Collections.singletonList(LOCK_PREFIX+lockKey), Collections.singletonList(requestId));
+        transaction.setnx("111","2222");
+        //transaction.eval(script, Collections.singletonList(LOCK_PREFIX+lockKey), Collections.singletonList(requestId));
+        transaction.exec();
+        jedis.get(LOCK_PREFIX+lockKey);
+        if (SUCCESS==1) {
+            return true;
+        }
+        return false;
+
+    }
+
+
 
     /**
      * 获取分布式锁
@@ -54,6 +101,21 @@ public class RedisUtil {
      */
     public static Boolean tryGetDistributedLock(RedisTemplate redisTemplate, String lockKey, String requestId, int expireTime) {
         try {
+            Object execute = redisTemplate.execute(new SessionCallback<Object>() {
+                @Override
+                public Object execute(RedisOperations redisOperations) throws DataAccessException {
+                    redisOperations.multi();
+                    //1、设置key
+                    redisOperations.opsForValue().set("vKey", "hi redis.");
+                    //2、获取key
+                    redisOperations.opsForValue().get("vKey");
+                    //3、删除key
+                    redisOperations.delete("vKey");
+                    final List<Object> result = redisOperations.exec();
+                    //返回vKey的值
+                    return result.get(1).toString();
+                }
+            });
             return redisTemplate.opsForValue().setIfAbsent(lockKey, requestId);
         } catch (Exception e) {
             log.error("尝试获取分布式锁-key[{}],异常===>{}", lockKey,e);

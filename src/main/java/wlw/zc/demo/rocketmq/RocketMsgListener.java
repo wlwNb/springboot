@@ -1,4 +1,4 @@
-package wlw.zc.demo.config.rocketmq;
+package wlw.zc.demo.rocketmq;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
