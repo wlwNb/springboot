@@ -53,9 +53,9 @@ public class Lock {
          Iterator<Thread> iterator = queue.iterator();
          while (iterator.hasNext()){
              Thread thread = iterator.next();
+             queue.remove(thread);
              LockSupport.unpark(thread);
          }
-         queue.clear();
      }
 
     /**
@@ -92,22 +92,22 @@ public class Lock {
 
     public static void main(String[] args) throws InterruptedException {
         Lock lock = new Lock();
-        for (int j = 0; j <50 ; j++) {
-            new Thread(new Runnable() {
-                @SneakyThrows
-                @Override
-                public void run() {
-                    lock.lock();
-                    for (int k = 0; k <1000 ; k++) {
-                        i++;
+            for (int j = 0; j < 50; j++) {
+                new Thread(new Runnable() {
+                    @SneakyThrows
+                    @Override
+                    public void run() {
+                        lock.lock();
+                        for (int k = 0; k < 1000; k++) {
+                            i++;
+                        }
+                        lock.unlock();
+                        countDownLatch.countDown();
                     }
-                    lock.unlock();
-                    countDownLatch.countDown();
-                }
-            }).start();
-        }
-        countDownLatch.await();
-        System.out.println(i);
+                }).start();
+            }
+            countDownLatch.await();
+            System.out.println(i);
     }
 
 

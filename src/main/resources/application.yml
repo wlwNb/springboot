@@ -33,15 +33,15 @@ spring:
   redis:
     timeout: 30000
     database: 7
-    lettuce:
-      pool:
-        max-active: 256
-        max-idle: 64
-        max-wait: 30000
-        min-idle: 32
     password: wlw
     host: 115.159.144.187
     port: 7001
+    lettuce:
+      pool:
+        max-wait: 1000
+        max-active: 8
+        min-idle: 0
+        max-idle: 8
   http:
     encoding.charset: UTF-8
     encoding.enable: true
@@ -71,13 +71,13 @@ rocketmq:
   name-server: 115.159.144.187:9876
   producer:
     wlw:
-      group: wlw_test_consumer_group
+      group: wlw_test_producer_group
     maxMessageSize: 4096
     retryTimesWhenSendFailed: 2
     send-message-timeout: 3000
   consumer:
     wlw:
-      group: wlw_test_consumer_group
+      group: wlw_test_consumer_group_copy
       topics: topic_test
       consumeThreadMin: 20
       consumeThreadMax: 64
