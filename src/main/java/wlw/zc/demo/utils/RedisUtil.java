@@ -15,7 +15,10 @@ import wlw.zc.demo.spring.SpringApplicationContext;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * redis锁工具类
@@ -28,6 +31,42 @@ public class RedisUtil {
     private static final String SET_IF_NOT_EXIST = "NX";
     private static final String SET_WITH_EXPIRE_TIME = "PX";
     private static final String LOCK_PREFIX = "wlw_";
+    private static ThreadLocal<Integer> threadLocal = new ThreadLocal<>();
+    private static volatile Integer maxId = 0;
+    private static volatile AtomicInteger minId = new AtomicInteger(0);
+    private static final int add = 1000;
+    private static ReentrantLock lock = new ReentrantLock();
+
+    /**
+     * 获取分布式id
+     * @return
+     * @throws InterruptedException
+     */
+    public static Integer getId() throws InterruptedException {
+        if(minId.get()>maxId){
+            try {
+                if(lock.tryLock()) {
+                    addId();
+                }else {
+                    Thread.sleep(50);
+                    getId();
+                }
+            } finally {
+                lock.unlock();
+            }
+        }
+        return minId.getAndIncrement();
+    }
+
+    private static void addId(){
+         /*
+             Integer id = redis.increby(1000);
+            */
+        Integer id =0;
+        maxId = id;
+        minId.set(id-add);
+    }
+
 
     /**
      * 加锁
@@ -53,6 +92,76 @@ public class RedisUtil {
             }
         }
         return false;
+    }
+
+    /**
+     *
+     * @param redisTemplate
+     * @param key
+     * @param expireTime
+     * @return
+     * 1.原子性
+     * 2.误删
+     * 3.可重入
+     * 4.超时
+     */
+    public static boolean lock(RedisTemplate redisTemplate, String key , int expireTime) {
+        if(threadLocal.get() == null){
+            String s = UUID.randomUUID().toString();
+            Boolean f = redisTemplate.opsForValue().setIfAbsent(key,s,expireTime,TimeUnit.SECONDS);
+            if(f){
+                threadLocal.set(1);
+                Thread demo = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        while (true) {
+                            Boolean expire = redisTemplate.expire(key, expireTime, TimeUnit.SECONDS);
+                            //有可能已经主动删除key,不需要在续命
+                            if(!expire){
+                                return;
+                            }
+                            System.out.printf("续命成功");
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                });
+                demo.setDaemon(true);
+                demo.start();
+
+            }
+            return f;
+        }else{
+            threadLocal.set(threadLocal.get()+1);
+            return true;
+        }
+    }
+
+    /**
+     * 释放锁
+     *
+     * @param lockKey   锁
+     * @return 是否释放成功
+     * 支持可重入
+     */
+    public static boolean releaseLock(RedisTemplate redisTemplate, String lockKey) {
+
+        try {
+            if(threadLocal.get() != null){
+                if(threadLocal.get()-1 == 0){
+                    return  redisTemplate.opsForValue().getOperations().delete(lockKey);
+                }else {
+                    threadLocal.set(threadLocal.get()-1);
+                    return true;
+                }
+            }
+        } catch (Throwable e) {
+            log.error("[redis分布式锁] 解锁异常, {}", e.getMessage(), e);
+        }
+        return  false;
     }
 
     public static  boolean tryLock(Jedis jedis,String key, String request) {

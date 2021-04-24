@@ -1,7 +1,6 @@
 package wlw.zc.demo.system.controller;
 
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +29,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +41,7 @@ import wlw.zc.demo.config.UserRealm;
 import wlw.zc.demo.netty.NettyServer;
 import wlw.zc.demo.socket.NIOLowServer;
 import wlw.zc.demo.spring.SpringApplicationContext;
+import wlw.zc.demo.system.entity.Role;
 import wlw.zc.demo.system.entity.UploadFile;
 import wlw.zc.demo.system.entity.User;
 import wlw.zc.demo.system.service.UserService;
@@ -70,12 +71,22 @@ public class UserController {
 	private UserService userService;
 	@Resource
 	private TransactionMQProducer transactionMQProducer;
+	@Value("${server.port}")
+	private String port;
 	@RequestMapping("/regiester")
-	public String regiester(Map<String, Object> model){
-		redisTemplate.opsForValue().set("id","1111111111");
-		redisTemplate.opsForValue().get("id");
+	public String regiester(Map<String, Object> model) throws InterruptedException {
+		RedisUtil.lock(redisTemplate,"wlw",1000);
+		Thread.sleep(3000);
+		boolean wlw = RedisUtil.releaseLock(redisTemplate, "wlw");
+		System.out.println(wlw);
 		return "success";
 	}
+	@RequestMapping("/testAppllo")
+	public String testAppllo(){
+		System.out.println(port);
+		return port;
+	}
+
 	@RequestMapping("/send")
 	public void send(Map<String, Object> model) throws UnsupportedEncodingException, InterruptedException, RemotingException, MQClientException, MQBrokerException {
 		System.out.println(orderService.send());
@@ -153,6 +164,8 @@ public class UserController {
 	@PostMapping("/jedis")
 	public void jedis(){
 		userService.saveUser(null);
+		redisTemplate.opsForValue().set("111",new Role("2","校长"));
+		redisTemplate.opsForValue().get("111");
 		String s = UUID.randomUUID().toString();
 		RedisUtil.tryGetDistributedLock(redisTemplate,"ttt",s,100);
 		Jedis jedis = SpringApplicationContext.getBean(JedisPool.class).getResource();

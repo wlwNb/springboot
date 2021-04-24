@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class TDate extends Date {
 
@@ -29,6 +30,15 @@ public class TDate extends Date {
         } catch (ParseException e) {
             // TODO Auto-generated catch block
         }
+
+    }
+
+    public static void main(String[] arg){
+        AtomicInteger atomicInteger = new AtomicInteger(100);
+        atomicInteger.decrementAndGet();
+    }
+
+    private void setId(){
 
     }
 

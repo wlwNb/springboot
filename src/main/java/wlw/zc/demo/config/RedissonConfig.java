@@ -100,7 +100,7 @@ public class RedissonConfig {
     public RedisTemplate getRedisTemplate(RedisConnectionFactory redissonConnectionFactory) {
         RedisTemplate<Object, Object> redisTemplate = new RedisTemplate();
         redisTemplate.setConnectionFactory(redissonConnectionFactory);
-        redisTemplate.setValueSerializer(valueSerializer());
+        redisTemplate.setValueSerializer(null);
         redisTemplate.setKeySerializer(keySerializer());
         redisTemplate.setHashKeySerializer(keySerializer());
         redisTemplate.setHashValueSerializer(valueSerializer());

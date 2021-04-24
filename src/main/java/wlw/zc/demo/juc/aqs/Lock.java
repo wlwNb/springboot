@@ -3,8 +3,10 @@ package wlw.zc.demo.juc.aqs;
 import com.google.common.collect.HashBasedTable;
 import lombok.SneakyThrows;
 import sun.misc.Unsafe;
+import wlw.zc.demo.jvm.MyClassLoad;
 import wlw.zc.demo.system.entity.Task;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -28,7 +30,6 @@ public class Lock extends Task {
      private Thread thread;
      //内存操作工具
      //private static final Unsafe unsafe = Unsafe.getUnsafe();
-     private static int i = 0;
      private static CountDownLatch countDownLatch = new CountDownLatch(1000);
      private void lock() throws InterruptedException {
           if(tryLock()){
@@ -66,6 +67,7 @@ public class Lock extends Task {
              LockSupport.unpark(thread);
          }
      }
+
 
      private void addMap(Map map){
          map.get();
@@ -136,6 +138,7 @@ public class Lock extends Task {
 
         public MyThreadTest2(String name,Thread t) {
             this.t = t;
+            this.setName(name);
         }
 
         public MyThreadTest2( ) {
@@ -144,11 +147,11 @@ public class Lock extends Task {
 
     private void test(){
           //控制线程顺序执行 CountDownLatch
-        CountDownLatch first = new CountDownLatch(0);
+        CountDownLatch before = new CountDownLatch(0);
         for (int j = 0; j <5 ; j++) {
             CountDownLatch next =  new CountDownLatch(1);
-            new MyThreadTest("Thread-"+j,first,next).start();
-            first = next;
+            new MyThreadTest("Thread-"+j,before,next).start();
+            before = next;
         }
         //控制线程顺序执行 Join
         MyThreadTest2 firstThread = null;
@@ -181,7 +184,6 @@ public class Lock extends Task {
 
     private void test3(){
            Object synObj = new Object();
-        Object synObj2 = new Object();
 
         Thread t1 = new Thread(new Runnable() {
             @Override
@@ -200,7 +202,6 @@ public class Lock extends Task {
                 }
             };
         });
-
         Thread t2 = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -218,76 +219,61 @@ public class Lock extends Task {
                 }
             };
         });
+        t1.start();
         t2.start();
     }
 
-    private static final ReentrantLock reentrantLock = new ReentrantLock();
-    private static final Condition condition = reentrantLock.newCondition();
-    private static Queue<String> stringQueue = new LinkedList<>();
-
-    public static void addTask(int i) {
-        reentrantLock.lock();
-        try {
-            i++;
-            System.out.println(i);
-            condition.signalAll();
-            condition.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            reentrantLock.unlock();
-        }
-    }
-
-    public static String getTask(int i) throws InterruptedException {
-        reentrantLock.lock();
-        try {
-             i++;
-            System.out.println(i);
-            condition.await();
-            condition.signalAll();
-            return "stringQueue.remove()";
-        } finally {
-            reentrantLock.unlock();
-        }
-    }
+    private   ReentrantLock reentrantLock = new ReentrantLock();
+    private   Condition condition1 = reentrantLock.newCondition();
+    private   Condition condition2 = reentrantLock.newCondition();
+    private  volatile boolean flag = false;
 
      static volatile int j = 0;
 
-    private static void test4(){
+     //两个线程循环打印
+    private  void test4(){
       new Thread(()->{
+          reentrantLock.lock();
           try {
-              getTask(j);
+              for ( int i = 0; i < 1000; i++) {
+                  if(!flag) {
+                          condition1.await();
+                  }
+                  flag = false;
+                  System.out.println("addTask===>"+i);
+                  condition2.signal();
+              }
           } catch (InterruptedException e) {
               e.printStackTrace();
+          }finally {
+              reentrantLock.unlock();
           }
       }).start();
         new Thread(()->{
-            addTask(j);
-        }).start();
-
+            reentrantLock.lock();
+            try {
+                for (int i = 0; i < 1000; i++) {
+                    if (flag) {
+                            condition2.await();
+                    }
+                    flag = true;
+                    System.out.println("getTask===》"+i);
+                    condition1.signal();
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }finally {
+                reentrantLock.unlock();
+            }
+    }).start();
     }
 
-    public static void main(String[] args) throws InterruptedException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, ClassNotFoundException {
-        test4();
-        /*Lock lock = new Lock();
-        for (int j = 0; j <1000 ; j++) {
-            new Thread(new Runnable() {
-                @SneakyThrows
-                @Override
-                public void run() {
-                    lock.lock();
-                    for (int k = 0; k <1000 ; k++) {
-                        i++;
-                    }
-                    lock.unlock();
-                    countDownLatch.countDown();
-                }
-            }).start();
-        }
-        countDownLatch.await();
-        System.out.println(i);
-    }*/
+    public void test5(){
+        System.out.println("==========test6=========");
+    }
+
+    public static void main(String[] args) {
+        new Lock().test();
     }
 
 }

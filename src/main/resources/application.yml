@@ -107,3 +107,10 @@ dubbo:
       timeout: 6000
       retries: -1
       payload: 8388608
+app:
+  id: lipeng
+apollo:
+  meta: http://106.54.227.205:8080
+  bootstrap:
+    enabled: true
+    eagerLoad: true
