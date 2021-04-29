@@ -7,7 +7,7 @@
 	<artifactId>springboot-customer</artifactId>
 	<packaging>war</packaging>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>springboot-provider</name>
+	<name>springboot-customer</name>
 	<url>http://maven.apache.org</url>
 	
 	<!-- Inherit defaults from Spring Boot -->
